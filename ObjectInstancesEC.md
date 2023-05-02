@@ -11,13 +11,15 @@ In the current implementation of the RMI by hand, our client implements three st
  
  In practice, the methods would work like this:
  
+ ```
  Client: *Connecting to Server*
  Server: *Client Accepted*
  Client: *Wants to create Remote Method for math, calls:*
  Client: RemoteMethod math = (RemoteMethod) Naming.lookup("ObjectID");
  Client: math.add(2, 4)
+ ```
  
- public class Main {
+ ```public class Main {
    public RemoteMethod createMethod(String[] methods) {
     // create server connection and establish output stream
     Socket clientSocket = new Socket(address, port);
@@ -39,6 +41,7 @@ In the current implementation of the RMI by hand, our client implements three st
      // Client: You said Hello there!
    }
  }
+ ```
  
  Essentially, what this version of the implementation does--even though the server code isn't shown--is it removes the need for serialization because the objects 
  stay purely on the server side. This way, there is no risk of the object being leaked across the means of connection. Furthermore, the only data being sent from 
