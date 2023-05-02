@@ -1,22 +1,95 @@
-public class Client {
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.ArithmeticException;
+import java.net.ConnectException;
+import java.net.Socket;
 
+public class Client {
+    public static final String serverAddress = "localhost";
     /**
      * This method name and parameters must remain as-is
      */
     public static int add(int lhs, int rhs) {
-        return -1;
+        int result = (int) Double.NEGATIVE_INFINITY;
+        try {
+            Socket clientSocket = new Socket(serverAddress, PORT);
+            ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+            RemoteMethod addMethod = new RemoteMethod("add", new Object[] {lhs, rhs});
+            oos.writeObject(addMethod);
+            oos.flush();
+
+            ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
+            result = (int) ois.readObject();
+        
+            clientSocket.close();
+        } catch(ConnectException ce) {
+            System.out.println("Client was not able to connect to the port for the specified server.");
+            System.out.println("Please restart the client and try again.");
+            System.exit(1);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
     /**
      * This method name and parameters must remain as-is
      */
     public static int divide(int num, int denom) {
-        return -1;
+        if (denom == 0) {
+            throw new ArithmeticException("Illegal Operation: Division by Zero");
+        }
+        int result = (int) Double.NEGATIVE_INFINITY;
+        try {
+            Socket clientSocket = new Socket(serverAddress, PORT);
+            ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+            RemoteMethod divideMethod = new RemoteMethod("divide", new Object[] {num, denom});
+            oos.writeObject(divideMethod);
+            oos.flush();
+
+            ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
+            result = (int) ois.readObject();
+        
+            clientSocket.close();
+        } catch(ConnectException ce) {
+            System.out.println("Client was not able to connect to the port for the specified server.");
+            System.out.println("Please restart the client and try again.");
+            System.exit(1);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
     /**
      * This method name and parameters must remain as-is
      */
     public static String echo(String message) {
-        return "";
+        // connect to server
+        // Create an instance of RemoteHand
+        // RemoteMethod add = new RemoteMethod("add", new Object[] {lhs, rhs});
+        // ObjectOutputStream to serialize the add instance
+        // Send serialized data to output stream:
+        // OutputStream os = socket.getOutputStream();
+        String response = "";
+        try {
+            Socket clientSocket = new Socket(serverAddress, PORT);
+            ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+            RemoteMethod echoMethod = new RemoteMethod("echo", new Object[] {message});
+            oos.writeObject(echoMethod);
+            oos.flush();
+
+            ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
+            response = (String) ois.readObject();
+            // System.out.println(response);
+
+            clientSocket.close();
+        } catch(ConnectException ce) {
+            System.out.println("Client was not able to connect to the port for the specified server.");
+            System.out.println("Please restart the client and try again.");
+            System.exit(1);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return (String) response;
     }
 
     // Do not modify any code below this line
@@ -45,7 +118,7 @@ public class Client {
         if (echo("Hello").equals("You said Hello!"))
             System.out.print(".");
         else
-            System.out.print("X");
+            System.out.print("X");    
         
         System.out.println(" Finished");
     }
